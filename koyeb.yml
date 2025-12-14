@@ -1,0 +1,50 @@
+version: "1"
+name: media-extractor-bot
+
+services:
+  - name: telegram-bot
+    type: web
+    instance_type: free
+    regions:
+      - fra
+    env:
+      - key: BOT_TOKEN
+        scope: project
+      - key: CHANNEL_ID
+        scope: project
+      - key: API_ID
+        scope: project
+      - key: API_HASH
+        scope: project
+      - key: MAX_VIDEOS
+        value: "200"
+      - key: PORT
+        value: "8000"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    
+    ports:
+      - port: 8000
+        protocol: http
+    
+    routes:
+      - path: /
+        port: 8000
+    
+    health_checks:
+      - http:
+          port: 8000
+          path: /health
+        grace_period: 30
+        interval: 30
+        restart_limit: 3
+    
+    build:
+      type: dockerfile
+      dockerfile: Dockerfile
+    
+    scaling:
+      min: 1
+      max: 1
+    
+    auto_deploy: true
